@@ -13,7 +13,6 @@ export const Layout = props => {
         <meta name="description" content="Twitter aggregation app" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
       <Header />
       <MainContent>
         {props.children}
