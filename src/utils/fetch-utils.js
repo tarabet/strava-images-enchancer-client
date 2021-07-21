@@ -1,5 +1,7 @@
+import {getSession} from "next-auth/client";
+
 export const isProd = process.env.ENV === 'production'
-const port = parseInt(process.env.PORT, 10) || 3000
+const port = parseInt(process.env.PORT, 10) || 8080
 
 export function apiGet (req, url, language) { // Specify if we are requesting translations
   const { fetchUrl, options } = prepare(req, url, language)
@@ -119,16 +121,31 @@ export function prepare (req, url) {
 async function fetchWrapper (req, fetchUrl, options) {
   let response
   let error
+  let session
+  let sessionToken
 
   const { method } = options
   const xsrfToken = (method === 'PUT' || method === 'POST' || method === 'DELETE') && !req && extractCookieKey(document.cookie, 'XSRF-TOKEN')
+
+  if (typeof window === 'undefined' && req) {
+    session = await getSession({ req })
+  } else {
+    session = await getSession()
+  }
+
+  sessionToken = session?.token
 
   if (xsrfToken) {
     options.headers['X-XSRF-TOKEN'] = xsrfToken
   }
 
+  if (sessionToken) {
+    options.headers['Authorization'] = 'Bearer ' + sessionToken
+  }
+
   try {
     response = await fetch(fetchUrl, options)
+
     if (!response.ok) {
       error = createError(
         'Request failed with status code ' + response.status,
@@ -156,6 +173,8 @@ async function fetchWrapper (req, fetchUrl, options) {
       if (response.status === 204) {
         return null
       }
+
+
 
       return await response.json()
     } catch (e) {

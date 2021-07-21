@@ -1,3 +1,7 @@
 .body-wrapper {
+    background-color: lightgray;
+}
 
+.main-content-wrapper {
+    padding: 24px 0;
 }

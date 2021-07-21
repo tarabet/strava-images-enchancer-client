@@ -1,11 +1,14 @@
-import React from "react";
+import React, { PropsWithChildren } from "react";
 import Head from "next/head";
 
 import { Header } from "./Header";
 import { MainContent } from "./MainContent";
 import { Footer } from "./Footer";
+import {PopupMapper} from "./PopupMapper";
 
-export const Layout = props => {
+type ProfileProps = {}
+
+export const Layout = (props: PropsWithChildren<ProfileProps>) => {
   return (
     <>
       <Head>
@@ -18,6 +21,7 @@ export const Layout = props => {
         {props.children}
       </MainContent>
       <Footer />
+      <PopupMapper />
     </>
   )
 }

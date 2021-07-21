@@ -1,20 +1,49 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { Container, Menu } from "semantic-ui-react";
+import {useDispatch} from "react-redux";
 
-import ModalSignInForm from "./ModalRegularSignInForm";
-import ModalSignUpForm from "./ModalRegularSignUpForm";
+import { togglePopup } from "../store/popup";
+import {POPUP_SIGN_IN_FORM, POPUP_SIGN_UP_FORM} from "./PopupMapper";
+import {useSession} from "next-auth/client";
+import { useRouter } from "next/router";
+
+import {authSignOut} from "../store/auth";
+import {URL_POSTS} from "../utils/constants";
 
 export const Header = props => {
   const [ activeItem, setActiveItem ] = useState('home')
+  const [session, loading] = useSession()
+  const dispatch = useDispatch()
+  const router = useRouter()
+
+  const userName = session?.user?.name
+
+  useEffect(() => {
+    const { pathname } = router
+
+    switch(pathname) {
+      case URL_POSTS: {
+        return setActiveItem('postsList')
+      }
+      default: {
+        return setActiveItem('home')
+      }
+    }
+  }, [])
+
+  function togglePopupHandler (showFlag, type) {
+    dispatch(togglePopup(showFlag, type))
+  }
 
   return (
-    <Container fluid>
+    <Container>
       <Menu pointing secondary>
-        <Menu.Item header>Our Company</Menu.Item>
+        <Menu.Item onClick={() => router.push('/')} header>Feed Aggregator</Menu.Item>
         <Menu.Item
-          name='aboutUs'
-          active={activeItem === 'aboutUs'}
-          onClick={() => setActiveItem('aboutUs')}
+          name='postsList'
+          active={activeItem === 'postsList'}
+          href={URL_POSTS}
+          onClick={() => setActiveItem('postsList')}
         />
         <Menu.Item
           name='jobs'
@@ -27,10 +56,14 @@ export const Header = props => {
           onClick={() => setActiveItem('locations')}
         />
         <Menu.Menu position="right">
-          <ModalSignInForm />
-          <ModalSignUpForm />
+          {loading && <Menu.Item name={`Loading...`} />}
+          {session && <Menu.Item onClick={() => router.push('/profile')} name={`Welcome ${userName}`} />}
+          {session ? <Menu.Item name='sign out' onClick={() => authSignOut()}/> : <Menu.Item name='sign in' onClick={() => togglePopupHandler(true, POPUP_SIGN_IN_FORM)}/> }
+          {!session && <Menu.Item name='sign up' onClick={() => togglePopupHandler(true, POPUP_SIGN_UP_FORM)}/>}
         </Menu.Menu>
       </Menu>
     </Container>
   )
 }
+
+

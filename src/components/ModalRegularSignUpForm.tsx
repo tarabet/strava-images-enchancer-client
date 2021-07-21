@@ -7,8 +7,11 @@ import {useFormik} from "formik";
 import {signUpValidate} from "../utils/common";
 import {authRegister} from "../store/auth";
 
-function ModalSignUpForm() {
-  const [open, setOpen] = React.useState(false)
+type ModalSignInFormPropsType = {
+  togglePopupHandler: Function
+}
+
+function ModalSignUpForm({ togglePopupHandler }: ModalSignInFormPropsType) {
   const dispatch = useDispatch()
 
   const formik = useFormik({
@@ -19,20 +22,17 @@ function ModalSignUpForm() {
     },
     validate: signUpValidate,
     onSubmit: values => {
-      dispatch(authRegister(values)).then(() => {
-        setOpen(false)
-      })
+      dispatch(authRegister(values))
     },
   });
 
   return (
     <Modal
-      onClose={() => setOpen(false)}
-      onOpen={() => setOpen(true)}
-      open={open}
-      trigger={<Menu.Item name='sign up' />}
+      defaultOpen={true}
+      closeIcon={true}
+      onClose={() => togglePopupHandler(false, '')}
     >
-      <Segment>
+      <Segment basic>
         <Header>Create new account</Header>
         <Form onSubmit={formik.handleSubmit}>
           <Form.Field>
@@ -69,7 +69,7 @@ function ModalSignUpForm() {
             {formik.errors.password ? <div>{formik.errors.password}</div> : null}
           </Form.Field>
           <Button type="submit" content="Submit" />
-          <Button color='black' onClick={() => setOpen(false)}>Close</Button>
+          <Button color='black' onClick={() => togglePopupHandler(false)}>Close</Button>
         </Form>
       </Segment>
     </Modal>

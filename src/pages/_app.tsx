@@ -2,17 +2,20 @@ import '../styles/globals.css'
 import 'semantic-ui-css/semantic.min.css'
 
 import type { AppProps } from 'next/app'
+import { Provider as AuthProvider } from 'next-auth/client'
 
-import { Provider } from 'react-redux'
-import { useStore } from "../store/store";
+import { Provider as StoreProvider} from 'react-redux'
+import {useStore} from "../store/store";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const store = useStore(pageProps.initialReduxState)
 
   return (
-    <Provider store={store}>
+    <StoreProvider store={store}>
+      <AuthProvider session={pageProps.session}>
         <Component {...pageProps} />
-    </Provider>
+      </AuthProvider>
+    </StoreProvider>
   )
 }
 

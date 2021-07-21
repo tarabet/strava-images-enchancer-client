@@ -1,19 +1,22 @@
 import React from 'react'
 import { useDispatch } from "react-redux";
-import {Button, Header, Image, Modal, Menu, Form, Container, Segment} from 'semantic-ui-react'
+import {Button, Header, Modal, Form, Segment} from 'semantic-ui-react'
 
 import {useFormik} from "formik";
 import {signInValidate} from "../utils/common";
 import {authLogin} from "../store/auth";
 
-function ModalSignInForm() {
-  const [open, setOpen] = React.useState(false)
+type ModalSignInFormPropsType = {
+  togglePopupHandler: Function
+}
+
+function ModalSignInForm({ togglePopupHandler }: ModalSignInFormPropsType) {
   const dispatch = useDispatch()
 
   const formik = useFormik({
     initialValues: {
-      username: '',
-      password: ''
+      username: 'alexTestUser',
+      password: '0950106547'
     },
     validate: signInValidate,
     onSubmit: values => {
@@ -23,12 +26,11 @@ function ModalSignInForm() {
 
   return (
     <Modal
-      onClose={() => setOpen(false)}
-      onOpen={() => setOpen(true)}
-      open={open}
-      trigger={<Menu.Item name='sign in' />}
+      defaultOpen={true}
+      closeIcon={true}
+      onClose={() => togglePopupHandler(false, '')}
     >
-      <Segment>
+      <Segment basic>
         <Header>SignIn with existing account</Header>
         <Form onSubmit={formik.handleSubmit}>
           <Form.Field>
@@ -54,7 +56,7 @@ function ModalSignInForm() {
             {formik.errors.password ? <div>{formik.errors.password}</div> : null}
           </Form.Field>
           <Button type="submit" content="Submit" />
-          <Button color='black' onClick={() => setOpen(false)}>Close</Button>
+          <Button color='black' onClick={() => togglePopupHandler(false)}>Close</Button>
         </Form>
       </Segment>
     </Modal>
