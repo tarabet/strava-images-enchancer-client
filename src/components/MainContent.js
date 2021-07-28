@@ -1,9 +1,10 @@
 import React from "react";
+import {Container} from "semantic-ui-react";
 
 export const MainContent = props => {
   return (
-    <main>
+    <Container as="main" className="main-content-wrapper">
       {props.children}
-    </main>
+    </Container>
   )
 }

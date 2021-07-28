@@ -7,7 +7,7 @@ import {GetServerSidePropsContext} from "next";
 import {apiGet} from "../../utils/fetch-utils";
 import {API_URL_GET_POSTS, API_URL_GET_POSTS_LIST} from "../../utils/constants";
 
-export type Post = {
+export type PostType = {
   id: number,
   userName: string,
   lastModified: string,
@@ -16,15 +16,13 @@ export type Post = {
 }
 
 type PostPageParams = {
-  post: Post,
+  post: PostType,
   error?: string
 }
 
 export default function Post({ post, error }: PostPageParams) {
   const router = useRouter()
-  const { title, postBody } = post
-
-  const { pathname } = router
+  const { title, postBody, userName } = post
 
   if (error) {
     return <p>Ooops some error happened. Error is: ${error}.</p>
@@ -33,10 +31,9 @@ export default function Post({ post, error }: PostPageParams) {
   if (post) {
     return (
       <Layout>
-        <Container className="main-content-wrapper">
-          <h1>{title}</h1>
-          <p>{postBody}</p>
-        </Container>
+        <h1>{title}</h1>
+        <p className="posted-by">Posted by: {userName}</p>
+        <p>{postBody}</p>
       </Layout>
     )
   }
@@ -55,7 +52,7 @@ export async function getStaticPaths(context: GetServerSidePropsContext) {
       return {}
     })
 
-  const paths = postsList.map((post: Post) => ({
+  const paths = postsList.map((post: PostType) => ({
     params: { postId: post.id.toString() },
   }))
 
@@ -70,7 +67,7 @@ export async function getStaticProps(context: GetServerSidePropsContext) {
 
   let error = null;
 
-  const post: Post = await apiGet(req, API_URL_GET_POSTS + '/' + params?.postId)
+  const post: PostType = await apiGet(req, API_URL_GET_POSTS + '/' + params?.postId)
     .then(post => post)
     .catch(e => {
       console.log("ERROR", e.message)

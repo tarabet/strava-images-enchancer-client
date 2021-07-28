@@ -9,12 +9,12 @@ import {API_URL_GET_POSTS_LIST, URL_POSTS} from "../../utils/constants";
 import Error from "next/error";
 import {Container, Header, List} from "semantic-ui-react";
 
-type PostsPageProps = {
+export type PostsPageProps = {
   error?: string,
   postsList: Array<PostsListItem>
 }
 
-type PostsListItem = {
+export type PostsListItem = {
   id: number,
   title: string,
   userName: string
@@ -29,14 +29,12 @@ export default function Posts({ postsList, error }: PostsPageProps) {
 
   return (
     <Layout>
-      <Container className="main-content-wrapper">
         <Header as="h1">All posts list</Header>
         <List bulleted>
           {postsList?.map((item: PostsListItem, i: Number) => {
-            return <List.Item href={URL_POSTS + '/' + item.id}>{item.title}</List.Item>
+            return <List.Item key={i.toString()} href={URL_POSTS + '/' + item.id}>{item.title}</List.Item>
           })}
         </List>
-      </Container>
     </Layout>
   )
 }

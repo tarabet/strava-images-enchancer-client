@@ -7,7 +7,7 @@ import {apiGet, apiPost} from "../../utils/fetch-utils";
 import { Layout } from '../../components/Layout'
 import {API_URL_GET_USER_PROFILE} from "../../utils/constants";
 import {useFormik} from "formik";
-import {Button, Form, Header, Segment} from "semantic-ui-react";
+import {Button, Container, Form, Header, Segment} from "semantic-ui-react";
 import {useDispatch} from "react-redux";
 import {POPUP_TOGGLE} from "../../store/popup";
 import {
@@ -98,7 +98,7 @@ export async function getServerSideProps<GetServerSideProps>(context: GetServerS
   let error = null
 
   const userProfile = await apiGet(req, API_URL_GET_USER_PROFILE)
-    .then(profile => profile)
+    .then(profile => profile || {})
     .catch(e => {
       console.log("ERROR", e.message)
       error = e.message
@@ -108,7 +108,6 @@ export async function getServerSideProps<GetServerSideProps>(context: GetServerS
   return {
     props: {
       error,
-      session,
       userProfile
     }
   }

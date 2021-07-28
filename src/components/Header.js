@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import { Container, Menu } from "semantic-ui-react";
+import {Container, Dropdown, Menu} from "semantic-ui-react";
 import {useDispatch} from "react-redux";
 
 import { togglePopup } from "../store/popup";
@@ -58,6 +58,13 @@ export const Header = props => {
         <Menu.Menu position="right">
           {loading && <Menu.Item name={`Loading...`} />}
           {session && <Menu.Item onClick={() => router.push('/profile')} name={`Welcome ${userName}`} />}
+          {session && (
+            <Dropdown item text='Actions'>
+              <Dropdown.Menu>
+                <Dropdown.Item onClick={() => router.push('/admin-posts')}>Posts</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          )}
           {session ? <Menu.Item name='sign out' onClick={() => authSignOut()}/> : <Menu.Item name='sign in' onClick={() => togglePopupHandler(true, POPUP_SIGN_IN_FORM)}/> }
           {!session && <Menu.Item name='sign up' onClick={() => togglePopupHandler(true, POPUP_SIGN_UP_FORM)}/>}
         </Menu.Menu>

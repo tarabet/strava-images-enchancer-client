@@ -168,13 +168,9 @@ async function fetchWrapper (req, fetchUrl, options) {
 
   if (!error) {
     try {
-      const respContentType = response.headers.get('Content-Type')
-
       if (response.status === 204) {
         return null
       }
-
-
 
       return await response.json()
     } catch (e) {

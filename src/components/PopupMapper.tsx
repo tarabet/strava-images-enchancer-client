@@ -19,6 +19,9 @@ export const POPUP_REGISTER_FAILED = 'popupRegisterFailed'
 export const POPUP_PROFILE_UPDATE_SUCCESS = 'popupProfileUpdateSuccess'
 export const POPUP_PROFILE_UPDATE_FAILED = 'popupProfileUpdateFailed'
 
+export const POPUP_POST_SAVE_SUCCESS = 'popupProfileUpdateSuccess'
+export const POPUP_POST_SAVE_FAILED = 'popupProfileUpdateFailed'
+
 export const PopupMapper: FunctionComponent = () => {
     const { popupShow, popupType, popupMessage } = useSelector((store: RootState) => store.popup)
     const dispatch = useDispatch()
@@ -43,6 +46,8 @@ export const PopupMapper: FunctionComponent = () => {
             {popupType === POPUP_REGISTER_FAILED && <ModalMessage title='Failed' text='Register failed!' togglePopupHandler={togglePopupHandler} />}
             {popupType === POPUP_PROFILE_UPDATE_SUCCESS && <ModalMessage title='Success' text='Profile updated!' togglePopupHandler={togglePopupHandler} />}
             {popupType === POPUP_PROFILE_UPDATE_FAILED && <ModalMessage title='Failed' text='Profile update failed!' togglePopupHandler={togglePopupHandler} />}
+            {popupType === POPUP_POST_SAVE_SUCCESS && <ModalMessage title='Success' text='Post saved!' togglePopupHandler={togglePopupHandler} />}
+            {popupType === POPUP_POST_SAVE_FAILED && <ModalMessage title='Failed' text='Could not save post!' togglePopupHandler={togglePopupHandler} />}
         </>
     )
 }
