@@ -10,14 +10,15 @@ import {
 } from 'draft-js'
 
 type RichEditorPropsType = {
-  formikOnChange: Function,
+  formikOnChange?: Function,
   editorState: EditorState,
-  onBlur: Function
+  onBlur?: Function,
+  readOnly?: boolean
 }
 
 type SyntheticKeyboardEvent = React.KeyboardEvent<{}>
 
-export const RichEditor = ({ formikOnChange, editorState }: RichEditorPropsType) => {
+export const RichEditor = ({ formikOnChange, editorState, readOnly }: RichEditorPropsType) => {
   let lastEvent: SyntheticKeyboardEvent
   const editorRef = useRef<any>(null)
 
@@ -26,7 +27,7 @@ export const RichEditor = ({ formikOnChange, editorState }: RichEditorPropsType)
   }
 
   function onChange (editorState: EditorState) {
-    formikOnChange('editorState', editorState)
+    formikOnChange && formikOnChange('editorState', editorState)
   }
 
   function myKeyBindingFn(e: SyntheticKeyboardEvent): string | null {
@@ -69,6 +70,10 @@ export const RichEditor = ({ formikOnChange, editorState }: RichEditorPropsType)
     }
   }
 
+  if (readOnly) {
+    return <Editor readOnly={readOnly} editorState={editorState} onChange={onChange} />
+  }
+
   return (
     <div className="RichEditor-root">
       <BlockStyleControls
@@ -87,7 +92,6 @@ export const RichEditor = ({ formikOnChange, editorState }: RichEditorPropsType)
           handleKeyCommand={handleKeyCommand}
           keyBindingFn={myKeyBindingFn}
           onChange={onChange}
-          placeholder="Write your text here"
           ref={editorRef}
           spellCheck={true}
         />

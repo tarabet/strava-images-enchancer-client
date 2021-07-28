@@ -1,8 +1,8 @@
-import React, {useEffect} from 'react'
+import React from 'react'
+import {EditorState, convertFromRaw, RawDraftContentState} from "draft-js";
 
+import { RichEditor } from '../../components/ReachEditor'
 import { Layout } from '../../components/Layout'
-import {Container, Header, List} from "semantic-ui-react";
-import {useRouter} from "next/router";
 import {GetServerSidePropsContext} from "next";
 import {apiGet} from "../../utils/fetch-utils";
 import {API_URL_GET_POSTS, API_URL_GET_POSTS_LIST} from "../../utils/constants";
@@ -21,11 +21,12 @@ type PostPageParams = {
 }
 
 export default function Post({ post, error }: PostPageParams) {
-  const router = useRouter()
   const { title, postBody, userName } = post
+  const contentState = convertFromRaw(JSON.parse(postBody))
+  const editorState = EditorState.createWithContent(contentState)
 
   if (error) {
-    return <p>Ooops some error happened. Error is: ${error}.</p>
+    return <p>Oops some error happened. Error is: ${error}.</p>
   }
 
   if (post) {
@@ -33,7 +34,7 @@ export default function Post({ post, error }: PostPageParams) {
       <Layout>
         <h1>{title}</h1>
         <p className="posted-by">Posted by: {userName}</p>
-        <p>{postBody}</p>
+        <RichEditor editorState={editorState} readOnly={true}/>
       </Layout>
     )
   }

@@ -1,36 +1,52 @@
 import React, {useState} from 'react'
-import {Button, Form, Header, Segment, TextArea} from "semantic-ui-react";
-import {useDispatch} from "react-redux";
+import {Button, Form, Header, Icon, Segment} from "semantic-ui-react";
 import {useFormik} from "formik";
+import { EditorState, convertToRaw } from "draft-js"
+
 import {apiPost} from "../utils/fetch-utils";
 import {API_URL_POST_SAVE} from "../utils/constants";
-import {POPUP_TOGGLE} from "../store/popup";
-import {
-  POPUP_POST_SAVE_FAILED,
-  POPUP_POST_SAVE_SUCCESS,
-  POPUP_PROFILE_UPDATE_FAILED,
-  POPUP_PROFILE_UPDATE_SUCCESS
-} from "./PopupMapper";
+
+import { RichEditor } from './ReachEditor'
+import * as Yup from 'yup';
+
+type PostEditorType = {
+  title: string,
+  editorState: EditorState
+}
 
 export function AdminPostsWriteNewPostComponent() {
+  let error: string
+  let formik
+
   const [postSaving, setPostSaving] = useState(false)
+  const [saveStatus, setSaveStatus] = useState('')
 
-  const dispatch = useDispatch()
+  const [state, setState] = useState<PostEditorType>({ title: '', editorState: EditorState.createEmpty() })
 
-  const formik = useFormik({
-    initialValues: {
-      title: '',
-      postBody: ''
-    },
+  formik = useFormik({
+    initialValues: state,
+    enableReinitialize: true,
+    validationSchema: Yup.object().shape({
+      title: Yup.string().required('Required!')
+    }),
     onSubmit: async values => {
+      const { editorState, title } = values
+
+      const rawJsonState = JSON.stringify(convertToRaw(editorState.getCurrentContent()))
+
+      const payload = {
+        title,
+        postBody: rawJsonState
+      }
+
       setPostSaving(true)
 
-      await apiPost(null, API_URL_POST_SAVE, values)
+      await apiPost(null, API_URL_POST_SAVE, payload)
         .then(() => {
-          dispatch({ type: POPUP_TOGGLE, payload: { popupShow: true, popupType: POPUP_POST_SAVE_SUCCESS }})
+          setSaveStatus('success')
         })
-        .catch(() => {
-          dispatch({ type: POPUP_TOGGLE, payload: { popupShow: true, popupType: POPUP_POST_SAVE_FAILED }})
+        .catch((e) => {
+          setSaveStatus('failed')
         })
 
       setPostSaving(false)
@@ -54,17 +70,18 @@ export function AdminPostsWriteNewPostComponent() {
         </Form.Field>
         <Form.Field>
           <label htmlFor="postBody">Post body</label>
-          <Form.Field
-            id="postBody"
-            name="postBody"
-            type="text-area"
-            control={TextArea}
-            onChange={formik.handleChange}
-            value={formik.values.postBody}
+          <RichEditor
+            editorState={formik.values.editorState}
+            formikOnChange={formik.setFieldValue}
+            onBlur={formik.handleBlur}
           />
-          {formik.errors.postBody ? <div>{formik.errors.postBody}</div> : null}
+          {formik.errors.editorState ? <div>{formik.errors.editorState}</div> : null}
         </Form.Field>
-        {postSaving ? <Button basic loading>Loading</Button>  : <Button type="submit" content="Save" />}
+        <Button disabled={!formik.dirty || postSaving} type="submit" content="Save" />
+        {postSaving && <Icon loading name='spinner' />}
+        {/*Logic should be improved*/}
+        {saveStatus === 'success' && <Icon name='check circle' />}
+        {saveStatus === 'failed' && <Icon name='close' />}
       </Form>
     </Segment>
   )
