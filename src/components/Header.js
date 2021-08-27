@@ -16,7 +16,7 @@ export const Header = props => {
   const dispatch = useDispatch()
   const router = useRouter()
 
-  const userName = session?.user?.name
+  const userName = session?.user?.username
 
   useEffect(() => {
     const { pathname } = router
@@ -46,9 +46,10 @@ export const Header = props => {
           onClick={() => setActiveItem('postsList')}
         />
         <Menu.Item
-          name='jobs'
-          active={activeItem === 'jobs'}
-          onClick={() => setActiveItem('jobs')}
+          name='Strava Photos'
+          active={activeItem === 'stravaPhotos'}
+          onClick={() => setActiveItem('stravaPhotos')}
+          href="/strava-photos"
         />
         <Menu.Item
           name='locations'

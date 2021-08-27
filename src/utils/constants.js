@@ -9,3 +9,5 @@ export const API_URL_GET_ADMIN_POSTS_LIST = '/api/admin-posts/list'
 export const API_URL_POST_SAVE = '/api/posts/save'
 
 export const URL_POSTS = '/posts'
+
+export const OAUTH2_AUTHORIZATION_STRAVA = '/oauth2/authorization/strava'

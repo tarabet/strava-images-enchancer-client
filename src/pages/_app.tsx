@@ -12,7 +12,8 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <StoreProvider store={store}>
-      <AuthProvider session={pageProps.session}>
+      {/*Will check session every 60 secs, and keeps alive 5 mins*/}
+      <AuthProvider session={pageProps.session} options={{ clientMaxAge: 60, keepAlive: 5 * 60 }}>
         <Component {...pageProps} />
       </AuthProvider>
     </StoreProvider>

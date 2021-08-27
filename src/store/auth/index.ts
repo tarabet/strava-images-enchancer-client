@@ -34,7 +34,8 @@ export const authLogin = (values: LoginValues) => {
   return (dispatch: AppDispatch) => {
     signin('credentials', { redirect: false, ...values})
         .then(() => {
-          dispatch({ type: POPUP_TOGGLE, payload: { popupType: POPUP_LOGIN_SUCCESS }})
+          // close login popup and currently nothing more
+          dispatch({ type: POPUP_TOGGLE, payload: { popupShow: false }})
         })
         .catch(e => {
             dispatch({ type: POPUP_TOGGLE, payload: { popupType: POPUP_LOGIN_FAILED }})
@@ -42,7 +43,7 @@ export const authLogin = (values: LoginValues) => {
   }
 }
 
-export const authSignOut = () => signout()
+export const authSignOut = () => signout({ callbackUrl: '/' })
 
 export const authRegister: AppDispatch = (values: RegisterValues) => {
   return async (dispatch: AppDispatch) => {

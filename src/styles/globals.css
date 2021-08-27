@@ -6,6 +6,10 @@
     padding: 24px 0;
 }
 
+.padding-around-12 {
+    padding: 12px;
+}
+
 .posted-by {
     color: grey;
     font-size: small;

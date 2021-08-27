@@ -3,6 +3,40 @@ import Providers from 'next-auth/providers'
 
 import { API_URL_SIGNIN } from "../../../utils/constants";
 
+async function refreshAccessToken(token) {
+  try {
+    const baseUrl = process.env.BACKEND_URL
+    const url = baseUrl + '/api/auth/refreshtoken'
+
+    const response = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify({ refreshToken: token.refreshToken })
+    });
+
+    const refreshedTokenResp = await response.json()
+
+    if (!response.ok) {
+      throw refreshedTokenResp
+    }
+
+    return {
+      ...token,
+      accessToken: refreshedTokenResp.accessToken,
+      refreshToken: refreshedTokenResp.refreshToken ?? token.refreshToken
+    }
+  } catch (error) {
+    console.log(error);
+
+    return {
+      ...token,
+      error: "RefreshAccessTokenError",
+    }
+  }
+}
+
 export default NextAuth({
   providers: [
     Providers.Credentials({
@@ -26,23 +60,34 @@ export default NextAuth({
     })
   ],
   jwt: {
-    secret: process.env.JWT_SECRET
+    secret: process.env.JWT_SECRET,
+    verificationOptions: {
+      algorithms: ['HS512']
+    }
   },
   callbacks: {
     async jwt(token, user, account, profile, isNewUser) {
-      if (user) {
-        token.user = user
+      if (user && account) {
+        return {
+          accessToken: user.token,
+          accessTokenExpires: token.exp,
+          refreshToken: user.refreshToken,
+          user,
+        }
       }
 
-      return token
+      if (Date.now() < token.exp * 1000) {
+        return token
+      }
+
+      return refreshAccessToken(token)
     },
     async session(session, token) {
-      const { user } = token
-
-      session.token = user.token
-      session.user.name = user?.username
-      session.user.id = user?.id
-      session.user.roles = user?.roles
+      if (token) {
+        session.user = token.user
+        session.token = token.accessToken
+        session.error = token.error
+      }
 
       return session
     }
