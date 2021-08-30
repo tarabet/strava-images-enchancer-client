@@ -38,23 +38,12 @@ export const Header = props => {
   return (
     <Container>
       <Menu pointing secondary>
-        <Menu.Item onClick={() => router.push('/')} header>Feed Aggregator</Menu.Item>
-        <Menu.Item
-          name='postsList'
-          active={activeItem === 'postsList'}
-          href={URL_POSTS}
-          onClick={() => setActiveItem('postsList')}
-        />
+        <Menu.Item onClick={() => router.push('/')} header>Strava images enhancer</Menu.Item>
         <Menu.Item
           name='Strava Photos'
           active={activeItem === 'stravaPhotos'}
           onClick={() => setActiveItem('stravaPhotos')}
           href="/strava-photos"
-        />
-        <Menu.Item
-          name='locations'
-          active={activeItem === 'locations'}
-          onClick={() => setActiveItem('locations')}
         />
         <Menu.Menu position="right">
           {loading && <Menu.Item name={`Loading...`} />}
@@ -62,7 +51,7 @@ export const Header = props => {
           {session && (
             <Dropdown item text='Actions'>
               <Dropdown.Menu>
-                <Dropdown.Item onClick={() => router.push('/admin-posts')}>Posts</Dropdown.Item>
+                <Dropdown.Item>No actions currently</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           )}
